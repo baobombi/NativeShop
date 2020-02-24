@@ -12,6 +12,7 @@
 // export const SEARCH_PRODUCT = 'SEARCH_PRODUCT'
 import Product from '../..//models/product'
 export const SET_PRODUCT = 'SET_PRODUCT'
+
 export const fetchProducts = () => {
     return async dispatch => {
         try {
@@ -28,7 +29,7 @@ export const fetchProducts = () => {
             const loadedProducts = [];
 
             for (const key in resData) {
-                loadedProducts.push(new Product(key, resData[key].ownerId, resData[key].title, resData[key].imageUrl, resData[key].description, resData[key].price))
+                loadedProducts.push(new Product(key, resData[key].ownerId, resData[key].title, resData[key].imageUrl, resData[key].description, resData[key].price,resData[key].likeTotal))
             }
 
             dispatch({

@@ -3,7 +3,12 @@ import React from 'react'
 import {
   Platform,
   Dimensions,
-  Image
+  Image,
+  View,
+  SafeAreaView,
+  Button,
+  ScrollView,
+  Text
 } from 'react-native';
 
 import {
@@ -12,7 +17,8 @@ import {
 } from 'react-navigation';
 
 import { createStackNavigator } from 'react-navigation-stack';
-import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
+//import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
+import { createDrawerNavigator, DrawerNavigatorItems } from 'react-navigation-drawer';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import Icon from 'react-native-vector-icons/Ionicons'
 import Colors from '../constants/Colors';
@@ -26,6 +32,9 @@ import IconHeader from '../components/UI/IconHeader';
 import SplashScreen from '../screens/Users/SplashScreen';
 import SignInScreen from '../screens/Users/SignInScreen';
 import SignUpScreen from '../screens/Users/SignUpScreen';
+import * as authActions from '../store/actions/auth'
+
+import { useSelector, useDispatch } from 'react-redux';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -143,30 +152,40 @@ const ShopNavigator = createDrawerNavigator(
     contentOptions: {
       activeTintColor: Colors.default
     },
-    // contentComponent: props => {
+    // contentComponent: props => (<DrawerContent {...props} />)
+    contentComponent: props => {
+      const dispatch = useDispatch()
+      const checkLogin = useSelector(state => state.auth.userId)
+      console.log(checkLogin)
+      return (<View style={{ flex: 1, paddingTop: 20, }}>
+        <SafeAreaView forceInset={{ top: 'always', horizontal: 'never' }}>
+          <DrawerNavigatorItems {...props} />
+          {
+            checkLogin != null ?
+              <Button title='Log Out' color={Colors.primary} onPress={() => {
+                dispatch(authActions.logout())
+                props.navigation.navigate('Shop')
+                props.navigation.toggleDrawer()
 
-    //     //const dispatch = useDispatch()
-    //     return <View style={{ flex: 1, paddingTop: 20 }}>
-    //         <SafeAreaView forceInset={{ top: 'always', horizontal: 'never' }}>
-    //             <DrawerItems {...props} />
-    //             <Button title='Log Out' color={Colors.primary} onPress={() => {
-    //                 dispatch(authActions.logout())
-    //                 //props.navigation.navigate('Auth')
-    //             }} />
-    //         </SafeAreaView>
-    //     </View>
-    // }
+              }} /> :
+              <Button title='Log In' color={Colors.primary} onPress={() => {
+                props.navigation.navigate('LoginNavigator')
+              }} />
+          }
+        </SafeAreaView>
+      </View>)
+    }
   }
 )
 
 const LoginNavigator = createStackNavigator({
 
-  SplashScreen: {
-    screen: SplashScreen,
-    navigationOptions: {
-      headerShown: false
-    }
-  },
+  // SplashScreen: {
+  //   screen: SplashScreen,
+  //   navigationOptions: {
+  //     headerShown: false
+  //   }
+  // },
 
   SignInScreen: {
     screen: SignInScreen,

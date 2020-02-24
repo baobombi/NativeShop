@@ -10,24 +10,28 @@ import {
     ImageBackground,
     SafeAreaView,
     TouchableOpacity,
-    Animated
+    Animated,
+    Modal
 } from 'react-native';
 
 import { useSelector, useDispatch } from 'react-redux'
 // //import ProductItem from '../../components/shop/ProductItem'
- import * as cartActions from '../../store/actions/cart'
+import * as cartActions from '../../store/actions/cart'
+import ButtonLogin from '../../components/UI/IconLogin/ButtonLogin'
 // import * as productsActions from '../../store/actions/products'
 import Colors from '../../constants/Colors'
 import Icon from 'react-native-vector-icons/Ionicons'
+
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Fontisto from 'react-native-vector-icons/Fontisto'
-
+import Feather from 'react-native-vector-icons/Feather'
 MaterialIcons.loadFont()
 Icon.loadFont()
 Fontisto.loadFont()
+Feather.loadFont()
 const { height, width } = Dimensions.get('window')
 
-const HEADER_MAX_HEIGHT = height / 3;
+const HEADER_MAX_HEIGHT = height / 3
 const HEADER_MIN_HEIGHT = 60;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
@@ -35,11 +39,15 @@ const ProductDetail = (props) => {
 
     const dispatch = useDispatch();
 
+    const [modalVisible, setModalVisible] = useState(false)
+
     const [scrollY, setScrollY] = useState(new Animated.Value(0));
 
     const productId = props.navigation.getParam('productId')
 
     const selectedProduct = useSelector(state => state.products.availableProducts.find(prod => prod.id === productId))
+
+    const currentUser = useSelector(state => state.auth.userId)
 
     const headerHeight = scrollY.interpolate({
         inputRange: [0, HEADER_SCROLL_DISTANCE],
@@ -47,9 +55,39 @@ const ProductDetail = (props) => {
         extrapolate: 'clamp',
     });
 
+    // if (currentUser != null) {
+    //     setModalVisible(true)
+    // }
+    const checkUser = useCallback((currentUser) => {
+        if (currentUser === null) {
+            setModalVisible(true)
+        }
+    }, [setModalVisible])
+    //console.log(selectedProduct.likeTotal)
     const RenderScrollViewContent = () => {
         return (
             <View style={styles.header}>
+
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                >
+                    <View style={styles.modalViewContainer}>
+                        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+                            <View style={styles.modalViewDetail}>
+                                <View style={styles.modalHeader}>
+                                    <TouchableOpacity onPress={() => setModalVisible(false)}>
+                                        <Feather name='x' size={30} />
+                                    </TouchableOpacity>
+                                    <Text style={{ marginLeft: width / 3, fontSize: 20, fontWeight: 'bold' }}>会員登録</Text>
+                                </View>
+                                <ButtonLogin />
+                            </View>
+                        </SafeAreaView>
+
+                    </View>
+                </Modal>
                 <ImageBackground style={styles.image} source={{ uri: selectedProduct.imageUrl }} >
                     <TouchableOpacity
                         onPress={() => props.navigation.goBack()}
@@ -61,10 +99,16 @@ const ProductDetail = (props) => {
                 <View style={styles.titleView}>
                     <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{selectedProduct.title}</Text>
                     <View style={styles.buttonView}>
-                        <TouchableOpacity style={styles.buttonDetails}>
+                        <TouchableOpacity style={styles.buttonDetails} onPress={() => checkUser(currentUser)}>
                             <Icon name='ios-heart-empty' size={25} />
                             <Text> いいね !</Text>
                         </TouchableOpacity>
+
+                        {selectedProduct.likeTotal > 0 &&
+                            <View style={{ justifyContent: 'center', }}>
+                                <Text style={{ opacity: 0.5, fontSize: 20 }}>{selectedProduct.likeTotal}</Text>
+                            </View>
+                        }
 
                         <TouchableOpacity style={[styles.buttonDetails, { marginLeft: 10 }]}>
                             <Fontisto name='comment' size={20} />
@@ -148,19 +192,44 @@ const ProductDetail = (props) => {
                     <View style={styles.viewBottom}>
                         <Text style={styles.price}>${selectedProduct.price.toFixed(2)}</Text>
                         <TouchableOpacity
-                        onPress={()=>dispatch(cartActions.addToCart(selectedProduct))}
-                         style={styles.addButton}>
+                            onPress={() => dispatch(cartActions.addToCart(selectedProduct))}
+                            style={styles.addButton}>
                             <Text style={styles.addButtonText}>カートに追加</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-
             </SafeAreaView >
         </>
     )
 }
 
 const styles = StyleSheet.create({
+
+    modalHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        //backgroundColor: 'green'
+    },
+
+    modalViewDetail: {
+        width: width,
+        height: height,
+        backgroundColor: 'white',
+        //borderRadius: 10,
+        //padding: 50,
+        //alignItems: 'center'
+
+    },
+
+    modalViewContainer: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        height: height / 2,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        //backgroundColor: 'red'
+    },
 
     backgroundImage: {
         position: 'absolute',
@@ -214,7 +283,7 @@ const styles = StyleSheet.create({
     buttonView: {
         flexDirection: 'row',
         marginTop: 15,
-       justifyContent: 'space-around'
+        justifyContent: 'space-around',
     },
 
     titleView: {
