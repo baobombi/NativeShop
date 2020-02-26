@@ -117,7 +117,6 @@
 				FF2A1596E1CA7554EAF2D728 /* Pods-NativeDeviceTests.debug.xcconfig */,
 				D84CF17B9F42262C5AD2047D /* Pods-NativeDeviceTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};

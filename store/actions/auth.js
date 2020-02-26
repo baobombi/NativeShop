@@ -31,7 +31,7 @@ export const signup = (email, password) => {
             }
         );
 
-       
+
         if (!response.ok) {
             const errorResData = await response.json();
             const errorId = errorResData.error.message;
@@ -74,7 +74,6 @@ export const login = (email, password) => {
                 })
             }
         );
-        console.log('aaaa')
         if (!response.ok) {
             const errorResData = await response.json();
             const errorId = errorResData.error.message;
@@ -88,7 +87,6 @@ export const login = (email, password) => {
         }
 
         const resData = await response.json();
-        console.log(resData);
         dispatch(
             authenticate(
                 resData.localId,

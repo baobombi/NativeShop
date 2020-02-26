@@ -5,29 +5,50 @@ import {
     Text,
     Dimensions,
     TouchableOpacity,
+    Alert
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'
 import Colors from '../../../constants/Colors'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import { LoginButton } from 'react-native-fbsdk';
+//import firebase from 'react-native-firebase';
+
+import { LoginButton, AccessToken, LoginManager } from 'react-native-fbsdk';
 
 FontAwesome.loadFont()
+
 const { height, width } = Dimensions.get('window')
-const ButtonLogin = () => {
+const ButtonLogin = (props) => {
+
+    const loginFacebook = async () => {
+        try {
+            let result = await LoginManager.logInWithPermissions(["public_profile"])
+            if (result.isCancelled) {
+                console.log("Login cancelled");
+            } else {
+                const data = await AccessToken.getCurrentAccessToken();
+                console.log(data)
+                console.log("Login success with permissions: " + result.grantedPermissions.toString())
+
+            }
+        } catch (error) {
+            alert('Login failed with error' + error)
+        }
+
+    }
+
+
     return (
         <View style={{ backgroundColor: Colors.background, flex: 1, }} >
             <View style={{ marginLeft: 20, marginRight: 20, height: 40, marginTop: 20 }}>
                 <Text style={{ fontSize: 15, opacity: 0.5 }}>お互いに安心取引するためにまずは会員登録をよろしくお願いします</Text>
             </View>
             <View style={styles.down}>
-                <LoginButton
 
-                />
-                {/* <TouchableOpacity style={styles.facebookButton}>
+                <TouchableOpacity style={styles.facebookButton} onPress={loginFacebook}>
 
                     <FontAwesome name='facebook' size={20} color='white' />
                     <Text style={styles.textButton}>Facebookで登録</Text>
-                </TouchableOpacity> */}
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.facebookButton}>
                     <FontAwesome name='google' size={20} />
                     <Text style={styles.textButton}>Facebookで登録</Text>
