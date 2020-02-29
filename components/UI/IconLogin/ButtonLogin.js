@@ -5,33 +5,38 @@ import {
     Text,
     Dimensions,
     TouchableOpacity,
-    Alert
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'
+
 import Colors from '../../../constants/Colors'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
-//import firebase from 'react-native-firebase';
-
+import * as authActions from '../../../store/actions/auth'
+import { useSelector, useDispatch } from 'react-redux'
 import { LoginButton, AccessToken, LoginManager } from 'react-native-fbsdk';
-
 FontAwesome.loadFont()
-
 const { height, width } = Dimensions.get('window')
-const ButtonLogin = (props) => {
 
+
+const ButtonLogin = (props) => {
+    const dispath = useDispatch()
     const loginFacebook = async () => {
         try {
             let result = await LoginManager.logInWithPermissions(["public_profile"])
+            //console.log(result)
             if (result.isCancelled) {
                 console.log("Login cancelled");
             } else {
-                const data = await AccessToken.getCurrentAccessToken();
-                console.log(data)
-                console.log("Login success with permissions: " + result.grantedPermissions.toString())
+                const data = await AccessToken.getCurrentAccessToken()
+                const accessToken = data.accessToken
+                try {
+                    await dispath(authActions.loginFacebook(accessToken))
+                    props.navigation.navigate('Shop')
+                } catch (err) {
+                    console.log('Login failed with error' + err)
+                }
 
             }
         } catch (error) {
-            alert('Login failed with error' + error)
+            console.log('Login failed with error' + error)
         }
 
     }
@@ -45,7 +50,6 @@ const ButtonLogin = (props) => {
             <View style={styles.down}>
 
                 <TouchableOpacity style={styles.facebookButton} onPress={loginFacebook}>
-
                     <FontAwesome name='facebook' size={20} color='white' />
                     <Text style={styles.textButton}>Facebookで登録</Text>
                 </TouchableOpacity>
@@ -53,6 +57,7 @@ const ButtonLogin = (props) => {
                     <FontAwesome name='google' size={20} />
                     <Text style={styles.textButton}>Facebookで登録</Text>
                 </TouchableOpacity>
+
             </View>
 
         </View>

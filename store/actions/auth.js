@@ -30,8 +30,6 @@ export const signup = (email, password) => {
                 })
             }
         );
-
-
         if (!response.ok) {
             const errorResData = await response.json();
             const errorId = errorResData.error.message;
@@ -72,6 +70,50 @@ export const login = (email, password) => {
                     password: password,
                     returnSecureToken: true
                 })
+            }
+        );
+        if (!response.ok) {
+            const errorResData = await response.json();
+            const errorId = errorResData.error.message;
+            let message = 'Something went wrong!';
+            if (errorId === 'EMAIL_NOT_FOUND') {
+                message = 'This email could not be found!';
+            } else if (errorId === 'INVALID_PASSWORD') {
+                message = 'This password is not valid!';
+            }
+            throw new Error(message);
+        }
+
+        const resData = await response.json();
+        dispatch(
+            authenticate(
+                resData.localId,
+                resData.idToken,
+                parseInt(resData.expiresIn) * 1000
+            )
+        );
+        const expirationDate = new Date(
+            new Date().getTime() + parseInt(resData.expiresIn) * 1000
+        );
+        saveDataToStorage(resData.idToken, resData.localId, expirationDate);
+    };
+};
+export const loginFacebook = (token) => {
+    return async dispatch => {
+console.log('da di vao day')
+        const response = await fetch(
+            'https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=AIzaSyAXH5b7NyzUiIN6fYJeyBlF50cuiP7BhVw',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    postBody: "access_token=token&providerId=facebook.com",
+                    requestUri: 'abc',
+                    returnIdpCredential: true,
+                    returnSecureToken: true
+                }
             }
         );
         if (!response.ok) {

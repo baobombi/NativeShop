@@ -15,6 +15,7 @@ const initialState = {
   userProducts: [],
   searchProducts: []
 };
+
 export default (state = initialState, action) => {
   switch (action.type) {
 
@@ -24,6 +25,9 @@ export default (state = initialState, action) => {
         availableProducts: action.products,
       }
 
+    case ADD_FAVORITE_PRODUCT: {
+      
+    }
 
   }
 

@@ -15,13 +15,11 @@ import {
 } from 'react-native';
 
 import { useSelector, useDispatch } from 'react-redux'
-// //import ProductItem from '../../components/shop/ProductItem'
 import * as cartActions from '../../store/actions/cart'
+import * as productActions from '../../store/actions/products'
 import ButtonLogin from '../../components/UI/IconLogin/ButtonLogin'
-// import * as productsActions from '../../store/actions/products'
 import Colors from '../../constants/Colors'
 import Icon from 'react-native-vector-icons/Ionicons'
-
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Fontisto from 'react-native-vector-icons/Fontisto'
 import Feather from 'react-native-vector-icons/Feather'
@@ -29,41 +27,46 @@ MaterialIcons.loadFont()
 Icon.loadFont()
 Fontisto.loadFont()
 Feather.loadFont()
-const { height, width } = Dimensions.get('window')
 
+const { height, width } = Dimensions.get('window')
 const HEADER_MAX_HEIGHT = height / 3
 const HEADER_MIN_HEIGHT = 60;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const ProductDetail = (props) => {
 
+    //System Properties
     const dispatch = useDispatch();
 
-    const [modalVisible, setModalVisible] = useState(false)
 
-    const [scrollY, setScrollY] = useState(new Animated.Value(0));
+    //Properties
+
+    const [modalVisible, setModalVisible] = useState(false)
 
     const productId = props.navigation.getParam('productId')
 
     const selectedProduct = useSelector(state => state.products.availableProducts.find(prod => prod.id === productId))
+    //console.log(selectedProduct.title)
+    const currentFavoriteProduct = useSelector(state => state.products.favoriteProduct.some(prod => prod.id === productId));
 
     const currentUser = useSelector(state => state.auth.userId)
 
+    //Scroll Header Modal
+    const [scrollY, setScrollY] = useState(new Animated.Value(0));
     const headerHeight = scrollY.interpolate({
         inputRange: [0, HEADER_SCROLL_DISTANCE],
         outputRange: [0, HEADER_MIN_HEIGHT],
         extrapolate: 'clamp',
     });
 
-    // if (currentUser != null) {
-    //     setModalVisible(true)
-    // }
+    //Check Like button
     const checkUser = useCallback((currentUser) => {
         if (currentUser === null) {
             setModalVisible(true)
         }
-    }, [setModalVisible])
-    //console.log(selectedProduct.likeTotal)
+        dispatch(productActions.addFavoriteProduct(productId, selectedProduct.likeTotal))
+    }, [setModalVisible, dispatch, productId])
+
     const RenderScrollViewContent = () => {
         return (
             <View style={styles.header}>
@@ -88,7 +91,7 @@ const ProductDetail = (props) => {
 
                     </View>
                 </Modal>
-                <ImageBackground style={styles.image} source={{ uri: selectedProduct.imageUrl }} >
+                <ImageBackground style={styles.image} source={{ uri: selectedProduct?.imageUrl }} >
                     <TouchableOpacity
                         onPress={() => props.navigation.goBack()}
                         style={styles.backIcon}
@@ -97,16 +100,18 @@ const ProductDetail = (props) => {
                     </TouchableOpacity>
                 </ImageBackground>
                 <View style={styles.titleView}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{selectedProduct.title}</Text>
+                    <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{selectedProduct?.title}</Text>
                     <View style={styles.buttonView}>
                         <TouchableOpacity style={styles.buttonDetails} onPress={() => checkUser(currentUser)}>
-                            <Icon name='ios-heart-empty' size={25} />
+                            <Icon name={currentFavoriteProduct ? 'ios-heart' : 'ios-heart-empty'} size={25}
+
+                            />
                             <Text> いいね !</Text>
                         </TouchableOpacity>
 
-                        {selectedProduct.likeTotal > 0 &&
+                        {selectedProduct?.likeTotal > 0 &&
                             <View style={{ justifyContent: 'center', }}>
-                                <Text style={{ opacity: 0.5, fontSize: 20 }}>{selectedProduct.likeTotal}</Text>
+                                <Text style={{ opacity: 0.5, fontSize: 20 }}>{selectedProduct?.likeTotal}</Text>
                             </View>
                         }
 
@@ -133,33 +138,29 @@ const ProductDetail = (props) => {
                     <Text style={{ fontSize: 18, opacity: 0.6 }}>商品の説明</Text>
                 </View>
                 <View style={{ backgroundColor: 'white', width: '100%', padding: 15 }}>
-                    <Text style={{ fontSize: 20 }}>{selectedProduct.description}</Text>
-
-                    <Text>{selectedProduct.key} </Text>
+                    <Text style={{ fontSize: 20 }}>{selectedProduct?.description}</Text>
+                    <Text>{selectedProduct?.key} </Text>
                 </View>
 
                 <View style={{ backgroundColor: 'white', width: '100%', padding: 15 }}>
-                    <Text style={{ fontSize: 20 }}>{selectedProduct.description}</Text>
+                    <Text style={{ fontSize: 20 }}>{selectedProduct?.description}</Text>
 
-                    <Text>{selectedProduct.key} </Text>
+                    <Text>{selectedProduct?.key} </Text>
                 </View>
 
                 <View style={{ backgroundColor: 'white', width: '100%', padding: 15 }}>
-                    <Text style={{ fontSize: 20 }}>{selectedProduct.description}</Text>
-
-                    <Text>{selectedProduct.key} </Text>
+                    <Text style={{ fontSize: 20 }}>{selectedProduct?.description}</Text>
+                    <Text>{selectedProduct?.key} </Text>
                 </View>
 
                 <View style={{ backgroundColor: 'white', width: '100%', padding: 15 }}>
-                    <Text style={{ fontSize: 20 }}>{selectedProduct.description}</Text>
-
-                    <Text>{selectedProduct.key} </Text>
+                    <Text style={{ fontSize: 20 }}>{selectedProduct?.description}</Text>
+                    <Text>{selectedProduct?.key} </Text>
                 </View>
 
                 <View style={{ backgroundColor: 'white', width: '100%', padding: 15 }}>
-                    <Text style={{ fontSize: 20 }}>{selectedProduct.description}</Text>
-
-                    <Text>{selectedProduct.key} </Text>
+                    <Text style={{ fontSize: 20 }}>{selectedProduct?.description}</Text>
+                    <Text>{selectedProduct?.key} </Text>
                 </View>
             </View>
         )
@@ -177,6 +178,7 @@ const ProductDetail = (props) => {
                 >
                     <RenderScrollViewContent />
                 </ScrollView>
+
                 <Animated.View style={[styles.viewBar, { height: headerHeight }]}>
                     <TouchableOpacity
                         onPress={() => props.navigation.goBack()}
@@ -185,12 +187,14 @@ const ProductDetail = (props) => {
                         <Icon name='ios-arrow-back' color='white' size={30} />
                     </TouchableOpacity>
                     <Animated.View style={styles.bar}>
-                        <Text style={styles.titleBar}>{selectedProduct.title}</Text>
+                        <Text style={styles.titleBar}>{selectedProduct?.title}</Text>
                     </Animated.View>
                 </Animated.View>
+
+
                 <View style={styles.footer}>
                     <View style={styles.viewBottom}>
-                        <Text style={styles.price}>${selectedProduct.price.toFixed(2)}</Text>
+                        <Text style={styles.price}>${selectedProduct?.price.toFixed(2)}</Text>
                         <TouchableOpacity
                             onPress={() => dispatch(cartActions.addToCart(selectedProduct))}
                             style={styles.addButton}>
@@ -209,17 +213,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
-        //backgroundColor: 'green'
+
     },
 
     modalViewDetail: {
         width: width,
         height: height,
         backgroundColor: 'white',
-        //borderRadius: 10,
-        //padding: 50,
-        //alignItems: 'center'
-
     },
 
     modalViewContainer: {
@@ -253,13 +253,15 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         alignItems: 'center',
         flexDirection: 'row',
+        justifyContent: 'space-around'
+
     },
 
     bar: {
         height: 32,
         alignItems: 'center',
         justifyContent: 'center',
-        marginLeft: width / 3
+        marginRight: width / 3
 
     },
 

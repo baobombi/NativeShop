@@ -57,14 +57,14 @@ const ProductsOverView = (props) => {
         }
     }, [loadProducts])
     const products = useSelector(state => state.products.availableProducts);
-    
+
     //console.log(products)
-    const seletectItemHandler = (id, title) => {
+    const seletectItemHandler = (id) => {
         props.navigation.navigate({
             routeName: 'ProductDetail',
             params: {
                 productId: id,
-                productTitle: title,
+
             }
         })
     }
@@ -83,22 +83,9 @@ const ProductsOverView = (props) => {
                         title={itemData.item.title}
                         price={itemData.item.price}
                         onSelect={() => {
-                            seletectItemHandler(itemData.item.id, itemData.item.title)
+                            seletectItemHandler(itemData.item.id)
                         }}
                     >
-
-                        {/* <Button
-                            color={Colors.primary}
-                            title="View Details"
-                            onPress={() => {
-                                seletectItemHandler(itemData.item.id, itemData.item.title)
-                            }}
-                        />
-                        <Button
-                            color={Colors.primary}
-                            title="Add To Cart"
-                            onPress={() => { dispatch(cartActions.addToCart(itemData.item)) }}
-                        /> */}
                     </ProductItem>
                 }
             />
@@ -127,7 +114,7 @@ ProductsOverView.navigationOptions = navData => {
 
         />,
         headerBackTitle: '戻り'
-        
+
 
     };
 }

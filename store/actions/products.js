@@ -1,4 +1,7 @@
-// export const ADD_FAVORITE_PRODUCT = 'ADD_FAVORITE_PRODUCT'
+import Product from '../..//models/product'
+
+export const ADD_FAVORITE_PRODUCT = 'ADD_FAVORITE_PRODUCT'
+export const SET_PRODUCT = 'SET_PRODUCT'
 
 // export const DELETE_PRODUCT = 'DELETE_PRODUCT'
 
@@ -8,10 +11,7 @@
 
 // export const SET_FILTERS = 'SET_FILTERS'
 
-
 // export const SEARCH_PRODUCT = 'SEARCH_PRODUCT'
-import Product from '../..//models/product'
-export const SET_PRODUCT = 'SET_PRODUCT'
 
 export const fetchProducts = () => {
     return async dispatch => {
@@ -29,9 +29,9 @@ export const fetchProducts = () => {
             const loadedProducts = [];
 
             for (const key in resData) {
-                loadedProducts.push(new Product(key, resData[key].ownerId, resData[key].title, resData[key].imageUrl, resData[key].description, resData[key].price,resData[key].likeTotal))
+                loadedProducts.push(new Product(key, resData[key].ownerId, resData[key].title, resData[key].imageUrl, resData[key].description, resData[key].price, resData[key].likeTotal))
             }
-
+            new Product()
             dispatch({
                 type: SET_PRODUCT,
                 products: loadedProducts,
@@ -39,5 +39,12 @@ export const fetchProducts = () => {
         } catch (err) {
             throw err
         }
+    }
+}
+export const addFavoriteProduct = (productId, likeTotal) => {
+    return {
+        type: ADD_FAVORITE_PRODUCT,
+        productId: productId,
+        likeTotal: likeTotal
     }
 }

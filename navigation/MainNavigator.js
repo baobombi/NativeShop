@@ -156,7 +156,7 @@ const ShopNavigator = createDrawerNavigator(
     contentComponent: props => {
       const dispatch = useDispatch()
       const checkLogin = useSelector(state => state.auth.userId)
-      console.log(checkLogin)
+      //console.log(checkLogin)
       return (<View style={{ flex: 1, paddingTop: 20, }}>
         <SafeAreaView forceInset={{ top: 'always', horizontal: 'never' }}>
           <DrawerNavigatorItems {...props} />
