@@ -31,7 +31,7 @@ export const fetchProducts = () => {
             for (const key in resData) {
                 loadedProducts.push(new Product(key, resData[key].ownerId, resData[key].title, resData[key].imageUrl, resData[key].description, resData[key].price, resData[key].likeTotal))
             }
-            new Product()
+
             dispatch({
                 type: SET_PRODUCT,
                 products: loadedProducts,
@@ -42,9 +42,27 @@ export const fetchProducts = () => {
     }
 }
 export const addFavoriteProduct = (productId, likeTotal) => {
-    return {
-        type: ADD_FAVORITE_PRODUCT,
-        productId: productId,
-        likeTotal: likeTotal
+
+    return async (dispatch, getState) => {
+        const response = await fetch(`https://rn-shopapp-4686f.firebaseio.com/products/${productId}.json`,
+            {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    likeTotal
+                })
+            }
+        )
+        //console.log(response)
+        if (!response.ok) {
+            throw new Error('Some thing went wrong!!!!!')
+        }
+        dispatch({
+            type: ADD_FAVORITE_PRODUCT,
+            likeTotal: likeTotal,
+            productId: productId
+        })
     }
 }

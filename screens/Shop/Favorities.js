@@ -48,8 +48,8 @@ const Favorities = (props) => {
             <Popover
                 isVisible={isVisible}
                 fromView={touchable}
-                onRequestClose={()=>closePopove()}
-                >
+                onRequestClose={() => closePopove()}
+            >
 
                 <Text>I'm the content of this popover!</Text>
             </Popover>

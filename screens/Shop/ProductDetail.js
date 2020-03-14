@@ -34,7 +34,7 @@ const HEADER_MIN_HEIGHT = 60;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const ProductDetail = (props) => {
-
+    var likeTotal
     //System Properties
     const dispatch = useDispatch();
 
@@ -61,16 +61,31 @@ const ProductDetail = (props) => {
 
     //Check Like button
     const checkUser = useCallback((currentUser) => {
+
         if (currentUser === null) {
             setModalVisible(true)
+            return
         }
-        dispatch(productActions.addFavoriteProduct(productId, selectedProduct.likeTotal))
-    }, [setModalVisible, dispatch, productId])
+        if (currentFavoriteProduct) {
+            likeTotal = selectedProduct.likeTotal - 1
+        }
+        else {
+            likeTotal = selectedProduct.likeTotal + 1
+        }
+
+        dispatch(productActions.addFavoriteProduct(productId, likeTotal))
+    }, [setModalVisible, dispatch, productId, likeTotal])
+
+    useEffect(() => {
+        const willFocusSub = props.navigation.addListener('willFocus', checkUser)
+        return () => {
+            willFocusSub.remove()
+        }
+    }, [checkUser])
 
     const RenderScrollViewContent = () => {
         return (
             <View style={styles.header}>
-
                 <Modal
                     animationType="slide"
                     transparent={true}
@@ -88,7 +103,6 @@ const ProductDetail = (props) => {
                                 <ButtonLogin />
                             </View>
                         </SafeAreaView>
-
                     </View>
                 </Modal>
                 <ImageBackground style={styles.image} source={{ uri: selectedProduct?.imageUrl }} >
