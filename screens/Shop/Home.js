@@ -29,8 +29,8 @@ const Home = (props) => {
     return (
         <ScrollView>
             <View style={styles.container}>
-                <CollectionView title='Spring Collection' />
-                <Category title='List Of Category' onSelect={() => props.navigation.navigate('ProductsOverView')} />
+                <CollectionView title='春コレクション' />
+                <Category title='項目リスト' onSelect={() => props.navigation.navigate('ProductsOverView')} />
             </View>
         </ScrollView>
     )
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
 Home.navigationOptions = navData => {
 
     return {
-        headerTitle: 'Wearing a Dress',
+        headerTitle: 'ライフスタイル',
 
         headerLeft: <IconHeader
             name={Platform.OS === 'android' ? 'md-menu' : 'ios-menu'}

@@ -62,18 +62,20 @@ const styles = StyleSheet.create({
 
 })
 Favorities.navigationOptions = navData => {
+ 
     return {
-        headerTitle: 'Wearing a Dress',
-        headerRight: <IconHeader
-            name={Platform.OS === 'android' ? 'md-cart' : 'ios-cart'}
-            onTapped={() => {
-
-            }}
-        />,
+        headerTitle: 'お気に入り',
+        // headerRight: <IconHeader
+        //     name={Platform.OS === 'android' ? 'md-cart' : 'ios-cart'}
+        //     onTapped={() => {
+        //         navData.navigation.navigate('Cart');
+        //     }}
+        // />,
         headerLeft: <IconHeader
             name={Platform.OS === 'android' ? 'md-menu' : 'ios-menu'}
             onTapped={() => {
-
+                navData.navigation.toggleDrawer()
+        
             }}
 
         />,

@@ -21,6 +21,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createDrawerNavigator, DrawerNavigatorItems } from 'react-navigation-drawer';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import Icon from 'react-native-vector-icons/Ionicons'
+import Icons from 'react-native-vector-icons/AntDesign'
 import Colors from '../constants/Colors';
 //import Login from '../screens/Users/Login'
 import Home from '../screens/Shop/Home'
@@ -32,10 +33,10 @@ import IconHeader from '../components/UI/IconHeader';
 import SplashScreen from '../screens/Users/SplashScreen';
 import SignInScreen from '../screens/Users/SignInScreen';
 import SignUpScreen from '../screens/Users/SignUpScreen';
+import UserDetails from '../screens/Users/UserDetails'
 import * as authActions from '../store/actions/auth'
-
 import { useSelector, useDispatch } from 'react-redux';
-
+Icons.loadFont()
 const { width, height } = Dimensions.get('screen');
 
 const defaultNavOptions = {
@@ -85,20 +86,24 @@ const FavNavigator = createStackNavigator(
   }
 );
 
-const CartNavigator = createStackNavigator(
+const UserNavigator = createStackNavigator(
   {
-    Cart: {
-      screen: Cart
-    },
+    UserNavigator: {
+      screen: UserDetails,
+      navigationOptions: {
+        // header: null
+      }
+    }
   },
   {
+    //initialRouteName: 'UserDetails',
     defaultNavigationOptions: defaultNavOptions
   }
-)
+);
 
 const TabNavigator = createBottomTabNavigator(
   {
-    Home: {
+    ホーム: {
       screen: ProductsNavtigator,
       navigationOptions: {
 
@@ -107,18 +112,24 @@ const TabNavigator = createBottomTabNavigator(
             <Icon name={Platform.OS === 'android' ? 'md-home' : 'ios-home'} size={25} color={tabInfo.tintColor} />
           );
         },
-        //tabBarColor: 'red',
       }
     },
-    Favorites: {
+    いいね: {
       screen: FavNavigator,
       navigationOptions: {
         tabBarIcon: tabInfo => {
           return <Icon name='ios-star' size={25} color={tabInfo.tintColor} />
         },
-        //tabBarColor: Colors.primary,
       },
     },
+    マイページ: {
+      screen: UserNavigator,
+      navigationOptions: {
+        tabBarIcon: tabInfo => {
+          return <Icons name='user' size={25} color={tabInfo.tintColor} />
+        }
+      }
+    }
   },
   {
 
@@ -152,7 +163,6 @@ const ShopNavigator = createDrawerNavigator(
     contentOptions: {
       activeTintColor: Colors.default
     },
-    // contentComponent: props => (<DrawerContent {...props} />)
     contentComponent: props => {
       const dispatch = useDispatch()
       const checkLogin = useSelector(state => state.auth.userId)
@@ -166,8 +176,8 @@ const ShopNavigator = createDrawerNavigator(
                 dispatch(authActions.logout())
                 props.navigation.navigate('Shop')
                 props.navigation.toggleDrawer()
-
-              }} /> :
+              }} />
+              :
               <Button title='Log In' color={Colors.primary} onPress={() => {
                 props.navigation.navigate('LoginNavigator')
               }} />
@@ -179,13 +189,6 @@ const ShopNavigator = createDrawerNavigator(
 )
 
 const LoginNavigator = createStackNavigator({
-
-  // SplashScreen: {
-  //   screen: SplashScreen,
-  //   navigationOptions: {
-  //     headerShown: false
-  //   }
-  // },
 
   SignInScreen: {
     screen: SignInScreen,
@@ -207,8 +210,6 @@ const MainNavigator = createSwitchNavigator(
     SplashScreen: SplashScreen,
     LoginNavigator: LoginNavigator,
     Shop: ShopNavigator,
-    //Login: Login,
-
   },
   {
     defaultNavigationOptions: defaultNavOptions,
