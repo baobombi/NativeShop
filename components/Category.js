@@ -1,9 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React from 'react'
 import {
-    FlatList,
-    Platform,
-    Button,
-    ActivityIndicator,
     View,
     StyleSheet,
     Text,
@@ -20,6 +16,7 @@ import littleIcon from '../assets/temp/little.jpg'
 import maxiIcon from '../assets/temp/maxi.jpg'
 import midiIcon from '../assets/temp/midi.jpg'
 import partyIcon from '../assets/temp/party.jpg'
+
 const { height, width } = Dimensions.get('window')
 const imageWidth = width - 40
 const imageHeight = (imageWidth / 933) * 465
@@ -62,13 +59,9 @@ const Category = (props) => {
                     </TouchableOpacity>
                 </Swiper>
             </View>
-        </View >
-
-
+        </View>
     )
-
 }
- 
 const styles = StyleSheet.create({
 
     wapper: {

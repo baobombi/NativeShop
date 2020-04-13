@@ -1,9 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React from 'react'
 import {
-    FlatList,
-    Platform,
-    Button,
-    ActivityIndicator,
     View,
     StyleSheet,
     Text,

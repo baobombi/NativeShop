@@ -3,7 +3,6 @@ class User {
         this.id = id,
         this.title = title
         this.image = image
-        
     }
 }
 export default Place;

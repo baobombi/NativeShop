@@ -19,7 +19,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { useDispatch } from 'react-redux';
 const { height } = Dimensions.get('screen')
 const height_logo = height * 0.7 * 0.4
-
+MaterialIcons.loadFont()
 console.disableYellowBox = true
 
 const SplashScreen = (props) => {

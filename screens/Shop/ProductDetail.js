@@ -1,8 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {
   ScrollView,
-  Platform,
-  ActivityIndicator,
   View,
   StyleSheet,
   Text,
@@ -14,45 +12,53 @@ import {
   Modal,
 } from 'react-native';
 
+//Store
 import {useSelector, useDispatch} from 'react-redux';
 import * as cartActions from '../../store/actions/cart';
 import * as productActions from '../../store/actions/products';
-import ButtonLogin from '../../components/UI/IconLogin/ButtonLogin';
+
+//Font
 import Colors from '../../constants/Colors';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Feather from 'react-native-vector-icons/Feather';
-MaterialIcons.loadFont();
+
 Icon.loadFont();
+MaterialIcons.loadFont();
 Fontisto.loadFont();
 Feather.loadFont();
 
+//Component
+import ImageModal from '../../components/UI/Product/ImageModal';
+import RegisterModal from '../../components/UI/Product/RegisterModal';
 const {height, width} = Dimensions.get('window');
 const HEADER_MAX_HEIGHT = height / 3;
 const HEADER_MIN_HEIGHT = 60;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
-const ProductDetail = props => {
-  var likeTotal;
+const ProductDetail = (props) => {
   //System Properties
   const dispatch = useDispatch();
 
   //Properties
+  const [imageModal, setImageModal] = useState(false);
+
+  var likeTotal;
 
   const [modalVisible, setModalVisible] = useState(false);
 
   const productId = props.navigation.getParam('productId');
 
-  const selectedProduct = useSelector(state =>
-    state.products.availableProducts.find(prod => prod.id === productId),
+  const selectedProduct = useSelector((state) =>
+    state.products.availableProducts.find((prod) => prod.id === productId),
   );
-  //console.log(selectedProduct.title)
-  const currentFavoriteProduct = useSelector(state =>
-    state.products.favoriteProduct.some(prod => prod.id === productId),
+  
+  const currentFavoriteProduct = useSelector((state) =>
+    state.products.favoriteProduct.some((prod) => prod.id === productId),
   );
 
-  const currentUser = useSelector(state => state.auth.userId);
+  const currentUser = useSelector((state) => state.auth.userId);
 
   //Scroll Header Modal
   const [scrollY, setScrollY] = useState(new Animated.Value(0));
@@ -65,9 +71,10 @@ const ProductDetail = props => {
     extrapolate: 'clamp',
   });
 
+console.log(currentFavoriteProduct)
   //Check Like button
   const checkUser = useCallback(
-    currentUser => {
+    (currentUser) => {
       if (currentUser === null) {
         setModalVisible(true);
         return;
@@ -90,40 +97,45 @@ const ProductDetail = props => {
     };
   }, [checkUser]);
 
+  const images = [
+    {
+      url: '',
+      props: {
+        source: {uri: selectedProduct?.imageUrl},
+      },
+      width: width,
+      height: 450,
+      //resizeMode: 'center',
+    },
+    {
+      url: '',
+      props: {
+        source: {uri: selectedProduct?.imageUrl},
+      },
+      width: width,
+      height: 450,
+    },
+  ];
+
+
+
   const RenderScrollViewContent = () => {
     return (
       <View style={styles.header}>
         <Modal animationType="slide" transparent={true} visible={modalVisible}>
-          <View style={styles.modalViewContainer}>
-            <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-              <View style={styles.modalViewDetail}>
-                <View style={styles.modalHeader}>
-                  <TouchableOpacity onPress={() => setModalVisible(false)}>
-                    <Feather name="x" size={30} />
-                  </TouchableOpacity>
-                  <Text
-                    style={{
-                      marginLeft: width / 3,
-                      fontSize: 20,
-                      fontWeight: 'bold',
-                    }}>
-                    会員登録
-                  </Text>
-                </View>
-                <ButtonLogin />
-              </View>
-            </SafeAreaView>
-          </View>
+          <RegisterModal registerModalHandle={registerModalHandle} />
         </Modal>
-        <ImageBackground
-          style={styles.image}
-          source={{uri: selectedProduct?.imageUrl}}>
-          <TouchableOpacity
-            onPress={() => props.navigation.goBack()}
-            style={styles.backIcon}>
-            <Icon name="ios-arrow-back" size={30} />
-          </TouchableOpacity>
-        </ImageBackground>
+        <TouchableOpacity onPress={() => setImageModal(true)}>
+          <ImageBackground
+            style={styles.image}
+            source={{uri: selectedProduct?.imageUrl}}>
+            <TouchableOpacity
+              onPress={() => props.navigation.goBack()}
+              style={styles.backIcon}>
+              <Icon name="ios-arrow-back" size={30} />
+            </TouchableOpacity>
+          </ImageBackground>
+        </TouchableOpacity>
         <View style={styles.titleView}>
           <Text style={{fontWeight: 'bold', fontSize: 20}}>
             {selectedProduct?.title}
@@ -143,6 +155,7 @@ const ProductDetail = props => {
               <View style={{justifyContent: 'center'}}>
                 <Text style={{opacity: 0.5, fontSize: 20}}>
                   {selectedProduct?.likeTotal}
+                
                 </Text>
               </View>
             )}
@@ -172,32 +185,27 @@ const ProductDetail = props => {
           <Text style={{fontSize: 20}}>{selectedProduct?.description}</Text>
           <Text>{selectedProduct?.key} </Text>
         </View>
-
-        <View style={{backgroundColor: 'white', width: '100%', padding: 15}}>
-          <Text style={{fontSize: 20}}>{selectedProduct?.description}</Text>
-
-          <Text>{selectedProduct?.key} </Text>
-        </View>
-
-        <View style={{backgroundColor: 'white', width: '100%', padding: 15}}>
-          <Text style={{fontSize: 20}}>{selectedProduct?.description}</Text>
-          <Text>{selectedProduct?.key} </Text>
-        </View>
-
-        <View style={{backgroundColor: 'white', width: '100%', padding: 15}}>
-          <Text style={{fontSize: 20}}>{selectedProduct?.description}</Text>
-          <Text>{selectedProduct?.key} </Text>
-        </View>
-
-        <View style={{backgroundColor: 'white', width: '100%', padding: 15}}>
-          <Text style={{fontSize: 20}}>{selectedProduct?.description}</Text>
-          <Text>{selectedProduct?.key} </Text>
-        </View>
       </View>
     );
   };
+
+  //Image Modal Handle
+  const imageModalHideHandle = () => {
+    setImageModal(false);
+  };
+
+  const registerModalHandle = () => {
+    setModalVisible(false);
+  };
   return (
     <>
+      <Modal visible={imageModal} transparent={false} animationType="slide">
+        <ImageModal
+          imageDetail={selectedProduct?.imageUrl}
+          imageModalHideHandle={imageModalHideHandle}
+          images={images}
+        />
+      </Modal>
       <SafeAreaView style={{flex: 0, backgroundColor: Colors.background}} />
       <SafeAreaView style={styles.container}>
         <ScrollView
@@ -246,21 +254,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-  },
-
-  modalViewDetail: {
-    width: width,
-    height: height,
-    backgroundColor: 'white',
-  },
-
-  modalViewContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    height: height / 2,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    //backgroundColor: 'red'
   },
 
   backgroundImage: {
@@ -354,7 +347,8 @@ const styles = StyleSheet.create({
 
   image: {
     width: '100%',
-    height: height / 3,
+    height: height / 2,
+    resizeMode: 'contain',
   },
 
   price: {

@@ -20,7 +20,7 @@ import ProductItem from '../../components/UI/ProductItem';
 
 const {height} = Dimensions.get('window');
 
-const ProductsOverView = props => {
+const ProductsOverView = (props) => {
   // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState(false);
   // eslint-disable-next-line no-unused-vars
@@ -58,10 +58,10 @@ const ProductsOverView = props => {
       willFocusSub.remove();
     };
   }, [loadProducts, props.navigation]);
-  const products = useSelector(state => state.products.availableProducts);
+  const products = useSelector((state) => state.products.availableProducts);
 
   //console.log(products)
-  const seletectItemHandler = id => {
+  const seletectItemHandler = (id) => {
     props.navigation.navigate({
       routeName: 'ProductDetail',
       params: {
@@ -75,10 +75,10 @@ const ProductsOverView = props => {
         onRefresh={loadProducts}
         refreshing={isRefreshing}
         data={products}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         //horizontal={false}
         numColumns={3}
-        renderItem={itemData => (
+        renderItem={(itemData) => (
           <ProductItem
             image={itemData.item.imageUrl}
             title={itemData.item.title}
@@ -96,9 +96,9 @@ const ProductsOverView = props => {
 };
 
 const styles = StyleSheet.create({});
-ProductsOverView.navigationOptions = navData => {
+ProductsOverView.navigationOptions = (navData) => {
   return {
-    headerTitle: 'Product',
+    headerTitle: '商品',
     headerRight: (
       <IconHeader
         name={Platform.OS === 'android' ? 'md-cart' : 'ios-cart'}

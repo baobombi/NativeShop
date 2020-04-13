@@ -1,7 +1,6 @@
 import { LOGIN, SIGNUP, AUTHENTICATE, LOGOUT } from '../actions/auth';
 
 const initialState = {
-
     token: null,
     userId: null
 };

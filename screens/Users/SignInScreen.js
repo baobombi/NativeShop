@@ -24,6 +24,7 @@ import {useDispatch} from 'react-redux';
 
 FontAwesome.loadFont();
 Feather.loadFont();
+
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
 const formReducer = (state, action) => {
@@ -136,7 +137,7 @@ const SignInScreen = props => {
     disableLoginButton();
   }, [disableLoginButton]);
 
-  console.log(disableLogin);
+ 
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
