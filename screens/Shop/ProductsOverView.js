@@ -20,7 +20,7 @@ import ProductItem from '../../components/UI/ProductItem';
 
 const {height} = Dimensions.get('window');
 
-const ProductsOverView = (props) => {
+const ProductsOverView = props => {
   // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState(false);
   // eslint-disable-next-line no-unused-vars
@@ -58,10 +58,11 @@ const ProductsOverView = (props) => {
       willFocusSub.remove();
     };
   }, [loadProducts, props.navigation]);
-  const products = useSelector((state) => state.products.availableProducts);
+  
+  const products = useSelector(state => state.products.availableProducts);
 
   //console.log(products)
-  const seletectItemHandler = (id) => {
+  const seletectItemHandler = id => {
     props.navigation.navigate({
       routeName: 'ProductDetail',
       params: {
@@ -69,34 +70,42 @@ const ProductsOverView = (props) => {
       },
     });
   };
-  return (
-    <View style={{margin: 3}}>
-      <FlatList
-        onRefresh={loadProducts}
-        refreshing={isRefreshing}
-        data={products}
-        keyExtractor={(item) => item.id}
-        //horizontal={false}
-        numColumns={3}
-        renderItem={(itemData) => (
-          <ProductItem
-            image={itemData.item.imageUrl}
-            title={itemData.item.title}
-            price={itemData.item.price}
-            title={itemData.item.title}
-            idItem={itemData.item.id}
-            onSelect={() => {
-              seletectItemHandler(itemData.item.id);
-            }}
-          />
-        )}
-      />
-    </View>
-  );
+
+  if (isLoading) {
+    return (
+      <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  } else
+    return (
+      <View style={{margin: 3}}>
+        <FlatList
+          onRefresh={loadProducts}
+          refreshing={isRefreshing}
+          data={products}
+          keyExtractor={item => item.id}
+          //horizontal={false}
+          numColumns={3}
+          renderItem={itemData => (
+            <ProductItem
+              image={itemData.item.imageUrl}
+              title={itemData.item.title}
+              price={itemData.item.price}
+              title={itemData.item.title}
+              idItem={itemData.item.id}
+              onSelect={() => {
+                seletectItemHandler(itemData.item.id);
+              }}
+            />
+          )}
+        />
+      </View>
+    );
 };
 
 const styles = StyleSheet.create({});
-ProductsOverView.navigationOptions = (navData) => {
+ProductsOverView.navigationOptions = navData => {
   return {
     headerTitle: '商品',
     headerRight: (

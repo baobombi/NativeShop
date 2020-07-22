@@ -17,6 +17,7 @@
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* NativeDeviceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* NativeDeviceTests.m */; };
+		383508172446C7CB007CBD1B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 383508162446C7CB007CBD1B /* GoogleService-Info.plist */; };
 		8975EEA426D9CE96C428C287 /* libPods-NativeDevice-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D855EAE01F17039FC0201EC7 /* libPods-NativeDevice-tvOSTests.a */; };
 		B8CEF9F444B1CB33BBB9D35C /* libPods-NativeDeviceTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA613D50E0BB783D8430CE73 /* libPods-NativeDeviceTests.a */; };
 		BCB6848185ED71C7404522C1 /* libPods-NativeDevice-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7DE4C17116ABB634A87F2B /* libPods-NativeDevice-tvOS.a */; };
@@ -54,6 +55,7 @@
 		15308135EAB27DFD0AA82C1D /* Pods-NativeDevice-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NativeDevice-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-NativeDevice-tvOSTests/Pods-NativeDevice-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* NativeDevice-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "NativeDevice-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* NativeDevice-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "NativeDevice-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		383508162446C7CB007CBD1B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3F7DE4C17116ABB634A87F2B /* libPods-NativeDevice-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NativeDevice-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52CFBED4C5223932F2B316C9 /* Pods-NativeDevice-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NativeDevice-tvOS.release.xcconfig"; path = "Target Support Files/Pods-NativeDevice-tvOS/Pods-NativeDevice-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		5648DB63AF4108A9336A11B5 /* Pods-NativeDevice-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NativeDevice-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-NativeDevice-tvOSTests/Pods-NativeDevice-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
+				383508162446C7CB007CBD1B /* GoogleService-Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
@@ -293,7 +296,6 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = XZ9UXNFT2A;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -316,6 +318,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -346,6 +349,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				383508172446C7CB007CBD1B /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -686,7 +690,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = XZ9UXNFT2A;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = NativeDevice/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -706,7 +710,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = XZ9UXNFT2A;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = NativeDevice/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (

@@ -8,7 +8,6 @@ import {
     //ScrollView
 } from 'react-native';
 import bannerImage from '../assets/temp/banner.jpg'
-
 const { height, width } = Dimensions.get('window')
 const imageWidth = width - 40
 const imageHeight = (imageWidth / 933) * 465

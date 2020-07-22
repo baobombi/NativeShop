@@ -24,7 +24,6 @@ import * as cartActions from '../../store/actions/cart';
 import ButtonLogin from '../../components/UI/IconLogin/ButtonLogin';
 
 import Feather from 'react-native-vector-icons/Feather';
-Feather.loadFont();
 
 const {height, width} = Dimensions.get('screen');
 
@@ -33,16 +32,17 @@ const Cart = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCheckUser, setModalCheckUser] = useState(false);
-  const checkCurrentUser = useSelector(state => state.auth.userId);
 
   //Redux
   const dispatch = useDispatch();
+  const checkCurrentUser = useSelector(state => state.auth.userId);
   const cartToAmount = useSelector(state => state.cart.totalAmount);
   const quantityTotal = useSelector(state => state.cart.totalQuantity);
-
+  //console.log(cartToAmount)
   //Function
 
   //Get data list
+
   const cartItems = useSelector(state => {
     const transformedCartItems = [];
     for (const key in state.cart.items) {
@@ -60,20 +60,11 @@ const Cart = props => {
     );
     return;
   });
-
-  //If cartitem  = null, text dislay
-  if (cartItems.length == 0) {
-    return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <Text style={{fontSize: 20, opacity: 0.5, fontWeight: 'bold'}}>
-          Nothing In Your Eyes
-        </Text>
-      </View>
-    );
-  }
+  console.log(!cartItems)
+  
 
   const Line = props => {
-    return <View style={styles.line}></View>;
+    return <View style={styles.line} />;
   };
 
   const seletectItemHandler = (id, title) => {
@@ -104,17 +95,32 @@ const Cart = props => {
       }
       sendOrderHandle();
     },
-    [setModalCheckUser,sendOrderHandle],
+    [setModalCheckUser, sendOrderHandle],
   );
-
-  return (
+  const setRegisModalHandle = () => setModalCheckUser(modal => !modal);
+  const changeCartItemHandle = useCallback(
+    (prodID, value) => {
+      dispatch(cartActions.changeCartItem(prodID, value));
+    },
+    [dispatch],
+  );
+  if (cartItems.length == 0) {
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <Text style={{fontSize: 20, opacity: 0.5, fontWeight: 'bold'}}>
+          Nothing In Your Eyes
+        </Text>
+      </View>
+    );
+  } 
+   return (
     <View style={styles.container}>
       <Modal animationType="slide" transparent={false} visible={modalCheckUser}>
         <View style={styles.modalLoginViewContainer}>
           <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
             <View style={styles.modalLoginViewDetail}>
               <View style={styles.modalLoginHeader}>
-                <TouchableOpacity onPress={() => setModalCheckUser(false)}>
+                <TouchableOpacity onPress={setRegisModalHandle}>
                   <Feather name="x" size={30} />
                 </TouchableOpacity>
                 <Text
@@ -126,7 +132,7 @@ const Cart = props => {
                   会員登録
                 </Text>
               </View>
-              <ButtonLogin />
+              <ButtonLogin closeModal={setRegisModalHandle} />
             </View>
           </SafeAreaView>
         </View>
@@ -148,18 +154,16 @@ const Cart = props => {
               title={itemData.item.productTitle}
               amount={itemData.item.sum}
               idRemove={itemData.item.productId}
-              changeDetails={(key, value) =>
-                dispatch(cartActions.changeCartItem(key, value))
-              }
+              changeDetails={changeCartItemHandle}
               deletable
             />
+           
           )}
         />
-
         <View style={styles.totalDetails}>
           <View style={styles.total}>
             <Text style={styles.textStyle}>小計</Text>
-            <Text style={styles.textStyle}>¥ {cartToAmount.toFixed(2)}</Text>
+            <Text style={styles.textStyle}>¥ {cartToAmount}</Text>
           </View>
 
           <View style={styles.total}>
@@ -171,17 +175,14 @@ const Cart = props => {
               合計　(税込)
             </Text>
             <Text style={[styles.textStyle, {fontWeight: 'bold'}]}>
-              ¥ {cartToAmount.toFixed(2)}
+              ¥ {cartToAmount}
             </Text>
           </View>
         </View>
       </ScrollView>
       <Line />
       <View style={styles.footer}>
-        <TouchableOpacity
-          onPress={() => {
-            setModalVisible(true);
-          }}>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
           <View style={styles.buttonView}>
             <Text style={{color: 'white', fontSize: 20, fontWeight: 'bold'}}>
               ご購入の手続き
@@ -208,12 +209,15 @@ const Cart = props => {
               </Text>
             </View>
             <Line />
+
             {isLoading ? (
-              <View style={styles.viewLoad}>
+              <View style={[styles.viewLoad, {marginTop: 5}]}>
                 <ActivityIndicator size="large" color={Colors.primary} />
               </View>
             ) : (
-              <TouchableOpacity onPress={() => checkUser(checkCurrentUser)}>
+              <TouchableOpacity
+                onPress={() => checkUser(checkCurrentUser)}
+                style={{marginTop: 20}}>
                 <View style={styles.buttonView}>
                   <Text
                     style={{color: 'white', fontSize: 25, fontWeight: 'bold'}}>
@@ -223,6 +227,7 @@ const Cart = props => {
               </TouchableOpacity>
             )}
             <TouchableOpacity
+              style={{marginTop: 10}}
               onPress={() => {
                 setModalVisible(false);
               }}>
@@ -271,7 +276,7 @@ const styles = StyleSheet.create({
 
   modalViewDetail: {
     width: width,
-    height: (height * 2) / 3,
+    height: 0.5 * height,
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
@@ -322,6 +327,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.background,
   },
 });
+
 Cart.navigationOptions = navData => {
   return {
     headerTitle: 'カート',

@@ -1,18 +1,16 @@
 import React, {useState, useCallback, useEffect, useReducer} from 'react';
-
 import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
+  Dimensions,
 } from 'react-native';
-
 import Colors from '../../constants/Colors';
 import Inputs from '../../components/Inputs';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -22,9 +20,11 @@ import * as Animatable from 'react-native-animatable';
 import * as authActions from '../../store/actions/auth';
 import {useDispatch} from 'react-redux';
 
+import LineOption from '../../components/UI/IconLogin/LoginOptions';
+
 FontAwesome.loadFont();
 Feather.loadFont();
-
+const {height, width} = Dimensions.get('window');
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
 const formReducer = (state, action) => {
@@ -137,7 +137,6 @@ const SignInScreen = props => {
     disableLoginButton();
   }, [disableLoginButton]);
 
- 
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -155,13 +154,6 @@ const SignInScreen = props => {
             <Text style={styles.textFooter}>E-MAIL</Text>
             <View style={styles.action}>
               <FontAwesome name="user-o" color={Colors.default} size={20} />
-              {/* <TextInput
-              placeholder="Enter your email..."
-              keyboardType="email-address"
-              autoCapitalize="none"
-              style={styles.textInput}
-              onChangeText={email => setEmail(email)}
-            /> */}
               <Inputs
                 style={styles.textInput}
                 placeholder="Enter your email..."
@@ -189,13 +181,6 @@ const SignInScreen = props => {
             </Text>
             <View style={styles.action}>
               <FontAwesome name="lock" color={Colors.default} size={20} />
-              {/* <TextInput
-              placeholder="Enter your password..."
-              autoCapitalize="none"
-              secureTextEntry={!isShowPassword}
-              style={styles.textInput}
-              onChangeText={password => setPassword(password)}
-            /> */}
               <Inputs
                 style={styles.textInput}
                 Login
@@ -221,6 +206,12 @@ const SignInScreen = props => {
                 Forgot Password?
               </Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('SignUpScreen')}>
+              <Text style={{color: '#009bd1', marginTop: 15, fontSize: 15}}>
+                Register
+              </Text>
+            </TouchableOpacity>
             <View style={styles.button}>
               {!isLoginLoading ? (
                 <TouchableOpacity
@@ -242,7 +233,11 @@ const SignInScreen = props => {
                   <ActivityIndicator size="small" color={Colors.primary} />
                 </View>
               )}
-
+              <View style={styles.optionLogin}>
+                <LineOption />
+                <Text>OR</Text>
+                <LineOption />
+              </View>
               <TouchableOpacity
                 style={[
                   styles.signIn,
@@ -313,7 +308,7 @@ const styles = StyleSheet.create({
 
   button: {
     alignItems: 'center',
-    marginTop: 50,
+    marginTop: 0.02 * height,
   },
 
   signIn: {
@@ -328,6 +323,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: 'white',
+  },
+  optionLogin: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: 30,
   },
 });
 

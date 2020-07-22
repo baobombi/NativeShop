@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   ScrollView,
   View,
@@ -16,87 +16,71 @@ import {
 import {useSelector, useDispatch} from 'react-redux';
 import * as cartActions from '../../store/actions/cart';
 import * as productActions from '../../store/actions/products';
-
 //Font
 import Colors from '../../constants/Colors';
 import Icon from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
-import Feather from 'react-native-vector-icons/Feather';
-
-Icon.loadFont();
-MaterialIcons.loadFont();
-Fontisto.loadFont();
-Feather.loadFont();
-
 //Component
 import ImageModal from '../../components/UI/Product/ImageModal';
 import RegisterModal from '../../components/UI/Product/RegisterModal';
+
 const {height, width} = Dimensions.get('window');
 const HEADER_MAX_HEIGHT = height / 3;
 const HEADER_MIN_HEIGHT = 60;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+//console.log(HEADER_SCROLL_DISTANCE)
 
-const ProductDetail = (props) => {
+const ProductDetail = props => {
   //System Properties
   const dispatch = useDispatch();
-
   //Properties
   const [imageModal, setImageModal] = useState(false);
-
-  var likeTotal;
-
+  // var likeTotal;
   const [modalVisible, setModalVisible] = useState(false);
 
   const productId = props.navigation.getParam('productId');
 
-  const selectedProduct = useSelector((state) =>
-    state.products.availableProducts.find((prod) => prod.id === productId),
+  const selectedProduct = useSelector(state =>
+    state.products.availableProducts.find(prod => prod.id === productId),
   );
-  
-  const currentFavoriteProduct = useSelector((state) =>
-    state.products.favoriteProduct.some((prod) => prod.id === productId),
+  //console.log(selectedProduct)
+
+  const currentFavoriteProduct = useSelector(state =>
+    state.products.favoriteProduct.some(prod => prod.id === productId),
   );
 
-  const currentUser = useSelector((state) => state.auth.userId);
+  const setFavoriteHandle = useCallback(() => {
+    //console.log('da di vao day')
+    dispatch(
+      productActions.addFavoriteProduct(
+        productId,
+        selectedProduct.imageUrl,
+        selectedProduct.price,
+      ),
+    );
+  }, [dispatch, productId, selectedProduct.imageUrl, selectedProduct.price]);
 
-  //Scroll Header Modal
-  const [scrollY, setScrollY] = useState(new Animated.Value(0));
+  const deleteFavorite = useCallback(() => {
+    dispatch(productActions.deleteFavoriteProduct(productId));
+  }, [dispatch, productId]);
+
+  //Animation
+  // const opacity =  position.
+  const scrollY = new Animated.Value(0);
+  const isTop = 0;
+  const isDisapearing = -HEADER_MIN_HEIGHT;
+  const position = new Animated.subtract(HEADER_MIN_HEIGHT, scrollY);
 
   const headerHeight = scrollY.interpolate({
     inputRange: [0, HEADER_SCROLL_DISTANCE],
     outputRange: [0, HEADER_MIN_HEIGHT],
-    //  inputRange: [0, 0],
-    // outputRange: [100,100],
     extrapolate: 'clamp',
   });
-
-console.log(currentFavoriteProduct)
-  //Check Like button
-  const checkUser = useCallback(
-    (currentUser) => {
-      if (currentUser === null) {
-        setModalVisible(true);
-        return;
-      }
-      if (currentFavoriteProduct) {
-        likeTotal = selectedProduct.likeTotal - 1;
-      } else {
-        likeTotal = selectedProduct.likeTotal + 1;
-      }
-
-      dispatch(productActions.addFavoriteProduct(productId, likeTotal));
-    },
-    [setModalVisible, dispatch, productId, likeTotal],
-  );
-
-  useEffect(() => {
-    const willFocusSub = props.navigation.addListener('willFocus', checkUser);
-    return () => {
-      willFocusSub.remove();
-    };
-  }, [checkUser]);
-
+  const opacity = position.interpolate({
+    inputRange: [isDisapearing, isTop],
+    outputRange: [1, 0.5],
+    extrapolate: 'clamp',
+  });
   const images = [
     {
       url: '',
@@ -116,8 +100,9 @@ console.log(currentFavoriteProduct)
       height: 450,
     },
   ];
-
-
+  //Image Modal Handle
+  const imageModalHideHandle = () => setImageModal(value => !value);
+  const registerModalHandle = () => setModalVisible(false);
 
   const RenderScrollViewContent = () => {
     return (
@@ -125,45 +110,43 @@ console.log(currentFavoriteProduct)
         <Modal animationType="slide" transparent={true} visible={modalVisible}>
           <RegisterModal registerModalHandle={registerModalHandle} />
         </Modal>
-        <TouchableOpacity onPress={() => setImageModal(true)}>
+        <TouchableOpacity onLongPress={imageModalHideHandle}>
           <ImageBackground
             style={styles.image}
-            source={{uri: selectedProduct?.imageUrl}}>
-            <TouchableOpacity
-              onPress={() => props.navigation.goBack()}
-              style={styles.backIcon}>
-              <Icon name="ios-arrow-back" size={30} />
-            </TouchableOpacity>
-          </ImageBackground>
+            source={{uri: selectedProduct?.imageUrl}}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => props.navigation.goBack()}
+          style={styles.backIconImage}>
+          <Icon name="ios-arrow-back" size={30} />
         </TouchableOpacity>
         <View style={styles.titleView}>
           <Text style={{fontWeight: 'bold', fontSize: 20}}>
             {selectedProduct?.title}
           </Text>
           <View style={styles.buttonView}>
-            <TouchableOpacity
-              style={styles.buttonDetails}
-              onPress={() => checkUser(currentUser)}>
-              <Icon
-                name={currentFavoriteProduct ? 'ios-heart' : 'ios-heart-empty'}
-                size={25}
-              />
-              <Text> いいね !</Text>
-            </TouchableOpacity>
+            <View style={{flexDirection: 'row'}}>
+              <TouchableOpacity
+                style={styles.buttonDetails}
+                onPress={
+                  currentFavoriteProduct ? deleteFavorite : setFavoriteHandle
+                }>
+                <Icon
+                  name={
+                    currentFavoriteProduct ? 'ios-heart' : 'ios-heart-empty'
+                  }
+                  size={25}
+                />
+                <Text> いいね !</Text>
+              </TouchableOpacity>
 
-            {selectedProduct?.likeTotal > 0 && (
-              <View style={{justifyContent: 'center'}}>
-                <Text style={{opacity: 0.5, fontSize: 20}}>
-                  {selectedProduct?.likeTotal}
-                
-                </Text>
-              </View>
-            )}
-
-            <TouchableOpacity style={[styles.buttonDetails, {marginLeft: 10}]}>
-              <Fontisto name="comment" size={20} />
-              <Text>コメント</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.buttonDetails, {marginLeft: 10}]}>
+                <Fontisto name="comment" size={20} />
+                <Text>コメント</Text>
+              </TouchableOpacity>
+            </View>
 
             <TouchableOpacity
               style={{
@@ -185,17 +168,16 @@ console.log(currentFavoriteProduct)
           <Text style={{fontSize: 20}}>{selectedProduct?.description}</Text>
           <Text>{selectedProduct?.key} </Text>
         </View>
+        <View style={{backgroundColor: 'white', width: '100%', padding: 15}}>
+          <Text style={{fontSize: 20}}>{selectedProduct?.description}</Text>
+          <Text>{selectedProduct?.key} </Text>
+        </View>
+        <View style={{backgroundColor: 'white', width: '100%', padding: 15}}>
+          <Text style={{fontSize: 20}}>{selectedProduct?.description}</Text>
+          <Text>{selectedProduct?.key} </Text>
+        </View>
       </View>
     );
-  };
-
-  //Image Modal Handle
-  const imageModalHideHandle = () => {
-    setImageModal(false);
-  };
-
-  const registerModalHandle = () => {
-    setModalVisible(false);
   };
   return (
     <>
@@ -209,34 +191,34 @@ console.log(currentFavoriteProduct)
       <SafeAreaView style={{flex: 0, backgroundColor: Colors.background}} />
       <SafeAreaView style={styles.container}>
         <ScrollView
-          scrollEventThrottle={1}
+          scrollEventThrottle={16}
           onScroll={Animated.event([
             {
               nativeEvent: {
                 contentOffset: {y: scrollY},
               },
+              useNativeDrive: true,
             },
           ])}
           style={styles.scrollHeader}>
           <RenderScrollViewContent />
         </ScrollView>
 
-        <Animated.View style={[styles.viewBar, {height: headerHeight}]}>
+        <Animated.View
+          style={[styles.viewBar, {opacity, height: headerHeight}]}>
           <TouchableOpacity
             onPress={() => props.navigation.goBack()}
             style={styles.backIcon}>
             <Icon name="ios-arrow-back" color="white" size={30} />
           </TouchableOpacity>
-          <Animated.View style={styles.bar}>
+          <View style={styles.bar}>
             <Text style={styles.titleBar}>{selectedProduct?.title}</Text>
-          </Animated.View>
+          </View>
         </Animated.View>
 
         <View style={styles.footer}>
           <View style={styles.viewBottom}>
-            <Text style={styles.price}>
-              ${selectedProduct?.price.toFixed(2)}
-            </Text>
+            <Text style={styles.price}>¥ {selectedProduct?.price}</Text>
             <TouchableOpacity
               onPress={() => dispatch(cartActions.addToCart(selectedProduct))}
               style={styles.addButton}>
@@ -278,14 +260,25 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignItems: 'center',
     flexDirection: 'row',
-    justifyContent: 'space-around',
   },
 
   bar: {
     height: 32,
-    alignItems: 'center',
+    // alignItems: 'center',
     justifyContent: 'center',
-    marginRight: width / 3,
+    flex: 8.5,
+  },
+  backIcon: {
+    // marginLeft: 10,
+    // marginTop: 5,
+    marginHorizontal: 10,
+    justifyContent: 'center',
+    flex: 1.5,
+  },
+  backIconImage: {
+    marginHorizontal: 10,
+    justifyContent: 'center',
+    position: 'absolute',
   },
 
   titleBar: {
@@ -307,18 +300,14 @@ const styles = StyleSheet.create({
 
   buttonView: {
     flexDirection: 'row',
-    marginTop: 15,
-    justifyContent: 'space-around',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
   },
 
   titleView: {
     backgroundColor: 'white',
     padding: 15,
-  },
-
-  backIcon: {
-    marginLeft: 10,
-    marginTop: 5,
   },
 
   container: {
@@ -359,10 +348,11 @@ const styles = StyleSheet.create({
 
   addButton: {
     backgroundColor: '#290606',
-    height: 40,
+    height: 50,
     width: width / 3,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 15,
   },
 
   addButtonText: {

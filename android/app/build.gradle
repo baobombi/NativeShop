@@ -1,6 +1,11 @@
 apply plugin: "com.android.application"
 apply plugin: 'com.google.gms.google-services'
 
+project.ext.vectoricons = [
+        iconFontNames: [ 'MaterialIcons.ttf','FontAwesome.ttf','Feather.ttf','Fontisto.ttf','Ionicons.ttf','AntDesign.ttf' ] // Name of the font files you want to copy
+]
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+
 import com.android.build.OutputFile
 
 /**
@@ -180,7 +185,7 @@ android {
 }
 
 dependencies {
-
+    implementation project(':react-native-i18n')
     implementation project(':react-native-fbsdk')
     implementation project(':react-native-firebase')
     implementation fileTree(dir: "libs", include: ["*.jar"])

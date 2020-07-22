@@ -27,7 +27,6 @@ const Input = props => {
 
   const [hideErrorText, getHideErrorText] = useState('')
 
-
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: props.initialValue ? props.initialValue : '',
     isValid: props.initiallyValid,
@@ -45,6 +44,7 @@ const Input = props => {
   }, [inputState, onInputChange, id]);
 
   const textChangeHandler = text => {
+
     getHideErrorText(text)
     const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     let isValid = true;

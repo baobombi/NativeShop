@@ -8,8 +8,6 @@ import {
 } from 'react-native'
 import Colors from '../constants/Colors'
 import ImagePicker from 'react-native-image-picker';
-
-
 const options = {
     title: 'Choose an option',
     //customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],

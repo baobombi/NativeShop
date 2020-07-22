@@ -1,17 +1,18 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import IconHeader from '../../components/UI/IconHeader';
 import {useSelector, useDispatch} from 'react-redux';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-
-const UserDetails = (props) => {
-  const checkLogin = useSelector((state) => state.auth.userId);
-
+import UserInfor from './UserInformation/UserInfor'
+const UserDetails = props => {
+  const checkLogin = useSelector(state => state.auth.userId);
+  const changeLoginScreen = () => {
+    props.navigation.navigate('LoginNavigator');
+  };
   const Details = () => {
-    if (checkLogin === null) {
+    if (!checkLogin) {
       return (
         <View style={styles.container}>
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={changeLoginScreen}>
             <Text style={{fontSize: 20, fontWeight: 'bold'}}>
               会員登録・ログインへ
             </Text>
@@ -19,10 +20,10 @@ const UserDetails = (props) => {
         </View>
       );
     } else {
-      return <View></View>;
+      return <View />;
     }
   };
-  return <Details />;
+  return <UserInfor/>;
 };
 
 const styles = StyleSheet.create({
@@ -33,17 +34,9 @@ const styles = StyleSheet.create({
   },
 });
 
-UserDetails.navigationOptions = (navData) => {
+UserDetails.navigationOptions = navData => {
   return {
     headerTitle: '個人情報',
-    // headerRight: (
-    //     <IconHeader
-    //         name={Platform.OS === 'android' ? 'md-cart' : 'ios-cart'}
-    //         onTapped={() => {
-    //             navData.navigation.navigate('Cart');
-    //         }}
-    //     />
-    // ),
     headerLeft: (
       <IconHeader
         name={Platform.OS === 'android' ? 'md-menu' : 'ios-menu'}

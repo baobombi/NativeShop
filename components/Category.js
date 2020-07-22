@@ -11,7 +11,6 @@ import {
 import bannerImage from '../assets/temp/banner.jpg'
 import Swiper from 'react-native-swiper';
 import Colors from '../constants/Colors'
-
 import littleIcon from '../assets/temp/little.jpg'
 import maxiIcon from '../assets/temp/maxi.jpg'
 import midiIcon from '../assets/temp/midi.jpg'

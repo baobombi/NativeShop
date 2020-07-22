@@ -89,7 +89,7 @@ class FCMService {
         if (notificationOpen) {
           const notification: Notification = notificationOpen.notification;
           onOpenNotification(notification);
-          this.removeDeliveredNotification(notification)
+          this.removeDeliveredNotification(notification);
         }
       });
 
@@ -102,8 +102,7 @@ class FCMService {
         if (notificationOpen) {
           const notification: Notification = notificationOpen.notification;
           onOpenNotification(notification);
-          this.removeDeliveredNotification(notification)
-
+          this.removeDeliveredNotification(notification);
         }
       });
     // Triggered for data only payload in foreground
