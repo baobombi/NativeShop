@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,8 @@ import Animated, {
   set,
   useCode,
   min,
+  onChange,
+  block,
 } from 'react-native-reanimated';
 import {
   PanGestureHandler,
@@ -35,6 +37,7 @@ import {
   minus,
   clamp,
   panGestureHandler,
+  onGestureEvent,
 } from 'react-native-redash';
 import Colors from '../../../constants/Colors';
 import {Dropdown} from 'react-native-material-dropdown';
@@ -49,83 +52,74 @@ const CartItem = props => {
   const Line = props => {
     return <View style={styles.line} />;
   };
-  //Swipe Animation
-  const {gestureHandler, translation, velocity, state} = usePanGestureHandler();
-  const snapPoints = [-width, -(width * 0.35), 0];
-  const translateX = useValue(0);
-  const offsetX = useValue(0);
-  const heightAnimation = useValue(heightValue);
-  const clock = useClock(); //the animation has finished , animation is over => clock
-  const to = snapPoint(translateX, velocity.x, snapPoints);
-  const shouldRemove = eq(to, -width);
+
   const changeDetailHandle = () => {
-    return props.changeDetails(props.idRemove, 0);
+    props.changeDetails(props.idRemove, 0);
   };
-  useCode(
-    () => [
-      cond(
-        eq(state, State.ACTIVE),
-        set(translateX, add(offsetX, min(translation.x, 0))), //use min lock swipe out form left
-      ), //neu gia tri ban dau ban 1 thi keo ok,
-      cond(eq(state, State.END), [
-        set(translateX, timing({clock, from: translateX, to})), //set swipe cho muot
-         set(offsetX, translateX),
-        // cond(shouldRemove, [
-        //   set(heightAnimation, timing({from: heightValue, to: 0})),
-        //   //set(deleteOpacity, 0),
-        //   //cond(not(clockRunning(clock)), call([], changeDetailHandle)),
-        // ]),
-      ]),
-    ],
-    [changeDetailHandle],
-  );
+  //Swipe Animation
+  // const {gestureHandler, translation, velocity, state} = usePanGestureHandler();
+  // const snapPoints = [-(width * 0.4), 0];
+  // const translateX = useValue(0);
+  // const offsetX = useValue(0);
+  // const clock = useClock(); //the animation has finished , animation is over => clock
+  // const to = snapPoint(translateX, velocity.x, snapPoints);
+  // const checkPosition = eq(to, -(width * 0.4));
+
+  // useCode(
+  //   () => [
+  //     cond(eq(state, State.END), [
+  //       set(translateX, timing({clock, from: translateX, to})),
+  //       set(offsetX, translateX),
+  //     ]),
+  //     cond(eq(state, State.ACTIVE), [
+  //       set(translateX, add(offsetX, min(translation.x, 0))),
+  //     ]),
+  //   ],
+  //   [changeDetailHandle],
+  // );
+  //console.log(state);
   return (
-    <Animated.View>
-      <View style={styles.background}>
-        <Action  x={abs(translateX)}/>
-      </View>
-      <PanGestureHandler {...gestureHandler}>
-        <Animated.View style={{heightAnimation, transform: [{translateX}]}}>
-          <View style={styles.container}>
-            <View style={styles.imageTitle}>
-              <TouchableOpacity onPress={props.onClick}>
-                <Image style={styles.image} source={{uri: props.image}} />
-              </TouchableOpacity>
-              <View style={{marginLeft: 20}}>
-                <TouchableOpacity
-                  onPress={props.onClick}
-                  style={styles.textRange}>
-                  <Text numberOfLines={2} style={{fontSize: 20}}>
-                    {props.title}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={styles.details}>
-              <Dropdown
-                fontSize={20}
-                labelFontSize={18}
-                value={props.quantity}
-                containerStyle={styles.dropDown}
-                label="数量"
-                data={data}
-                pickerStyle={{borderBottomColor: 'transparent', borderWidth: 0}}
-                dropdownOffset={{top: 30}}
-                onChangeText={value =>
-                  props.changeDetails(props.idRemove, value)
-                }
-              />
-              <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-                ¥ {Math.round(props.amount * 100) / 100}
+    // <Animated.View>
+    //   <View style={styles.background}>
+    //     <Action delete={changeDetailHandle} x={abs(translateX)} />
+    //   </View>
+    // <PanGestureHandler {...gestureHandler}>
+    // <View style={{transform: [{translateX}]}}>
+    <>
+      <View style={styles.container}>
+        <View style={styles.imageTitle}>
+          <TouchableOpacity onPress={props.onClick}>
+            <Image style={styles.image} source={{uri: props.image}} />
+          </TouchableOpacity>
+          <View style={{marginLeft: 20}}>
+            <TouchableOpacity onPress={props.onClick} style={styles.textRange}>
+              <Text numberOfLines={2} style={{fontSize: 20}}>
+                {props.title}
               </Text>
-            </View>
+            </TouchableOpacity>
           </View>
-        </Animated.View>
-      </PanGestureHandler>
+        </View>
+        <View style={styles.details}>
+          <Dropdown
+            fontSize={20}
+            labelFontSize={18}
+            value={props.quantity}
+            containerStyle={styles.dropDown}
+            label="数量"
+            data={data}
+            pickerStyle={{borderBottomColor: 'transparent', borderWidth: 0}}
+            dropdownOffset={{top: 30}}
+            onChangeText={value => props.changeDetails(props.idRemove, value)}
+          />
+          <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+            ¥ {Math.round(props.amount * 100) / 100}
+          </Text>
+        </View>
+      </View>
       <View style={styles.viewLine}>
         <Line />
       </View>
-    </Animated.View>
+    </>
   );
 };
 

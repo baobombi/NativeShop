@@ -22,8 +22,10 @@ import CartItem from '../../components/UI/Cart/CartItem';
 import * as ordersActions from '../../store/actions/orders';
 import * as cartActions from '../../store/actions/cart';
 import ButtonLogin from '../../components/UI/IconLogin/ButtonLogin';
-
+import {SwipeListView} from 'react-native-swipe-list-view';
+import SwipeOut from '../../components/UI/SwipeOut';
 import Feather from 'react-native-vector-icons/Feather';
+import {set} from 'react-native-reanimated';
 
 const {height, width} = Dimensions.get('screen');
 
@@ -32,7 +34,7 @@ const Cart = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCheckUser, setModalCheckUser] = useState(false);
-
+  const [deleteProductLoading, setDeleteProductLoading] = useState(false);
   //Redux
   const dispatch = useDispatch();
   const checkCurrentUser = useSelector(state => state.auth.userId);
@@ -60,8 +62,6 @@ const Cart = props => {
     );
     return;
   });
-  console.log(!cartItems)
-  
 
   const Line = props => {
     return <View style={styles.line} />;
@@ -85,6 +85,7 @@ const Cart = props => {
     props.navigation.navigate('Home');
   };
 
+
   const checkUser = useCallback(
     checkCurrentUser => {
       if (checkCurrentUser === null) {
@@ -98,12 +99,15 @@ const Cart = props => {
     [setModalCheckUser, sendOrderHandle],
   );
   const setRegisModalHandle = () => setModalCheckUser(modal => !modal);
-  const changeCartItemHandle = useCallback(
-    (prodID, value) => {
-      dispatch(cartActions.changeCartItem(prodID, value));
-    },
-    [dispatch],
-  );
+
+  const changeCartItemHandle = async (prodID, value) => {
+    setDeleteProductLoading(true);
+    console.log('day la load truoc', deleteProductLoading);
+    await dispatch(cartActions.changeCartItem(prodID, value));
+    setDeleteProductLoading(false);
+    console.log('day la load sau', deleteProductLoading);
+  };
+
   if (cartItems.length == 0) {
     return (
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
@@ -112,8 +116,20 @@ const Cart = props => {
         </Text>
       </View>
     );
-  } 
-   return (
+  }
+
+  //Swipe
+  const SwipeOutHandle = (data, rowMap) => {
+    //console.log(data)
+    return (
+      <SwipeOut
+        delete={changeCartItemHandle}
+        productId={data.item.productId}
+        isDeleteLoading={deleteProductLoading}
+      />
+    );
+  };
+  return (
     <View style={styles.container}>
       <Modal animationType="slide" transparent={false} visible={modalCheckUser}>
         <View style={styles.modalLoginViewContainer}>
@@ -138,10 +154,10 @@ const Cart = props => {
         </View>
       </Modal>
       <ScrollView style={styles.header}>
-        <FlatList
-          data={cartItems}
+        <SwipeListView
           keyExtractor={item => item.productId}
-          renderItem={itemData => (
+          data={cartItems}
+          renderItem={(itemData, rowMap) => (
             <CartItem
               onClick={() =>
                 seletectItemHandler(
@@ -157,8 +173,10 @@ const Cart = props => {
               changeDetails={changeCartItemHandle}
               deletable
             />
-           
           )}
+          disableRightSwipe={true}
+          renderHiddenItem={SwipeOutHandle}
+          rightOpenValue={-(0.4 * width)}
         />
         <View style={styles.totalDetails}>
           <View style={styles.total}>

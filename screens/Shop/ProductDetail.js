@@ -279,6 +279,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     justifyContent: 'center',
     position: 'absolute',
+    width: width * 0.09,
   },
 
   titleBar: {
