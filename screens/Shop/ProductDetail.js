@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   ScrollView,
   View,
@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Animated,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 
 //Store
@@ -23,6 +24,8 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 //Component
 import ImageModal from '../../components/UI/Product/ImageModal';
 import RegisterModal from '../../components/UI/Product/RegisterModal';
+import AsyncStorage from '@react-native-community/async-storage';
+import {FlatList} from 'react-native-gesture-handler';
 
 const {height, width} = Dimensions.get('window');
 const HEADER_MAX_HEIGHT = height / 3;
@@ -34,36 +37,67 @@ const ProductDetail = props => {
   //System Properties
   const dispatch = useDispatch();
   //Properties
+  const [userId, setUserId] = useState();
+
   const [imageModal, setImageModal] = useState(false);
-  // var likeTotal;
+
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const productId = props.navigation.getParam('productId');
 
   const selectedProduct = useSelector(state =>
     state.products.availableProducts.find(prod => prod.id === productId),
   );
-  //console.log(selectedProduct)
-
   const currentFavoriteProduct = useSelector(state =>
     state.products.favoriteProduct.some(prod => prod.id === productId),
   );
+  useEffect(() => {
+    const asyncFunctionData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('userData');
+        const transformedData = JSON.parse(userData);
+        setUserId(transformedData.userId);
+      } catch (e) {}
+    };
+    asyncFunctionData();
+  }, [setUserId]);
+  const setFavoriteHandle = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      await dispatch(
+        productActions.addFavoriteProduct(
+          productId,
+          selectedProduct.title,
+          selectedProduct.imageUrl,
+          selectedProduct.price,
+        ),
+      );
+    } catch (err) {
+      throw err;
+    }
+    setIsLoading(false);
+  }, [dispatch]);
 
-  const setFavoriteHandle = useCallback(() => {
-    //console.log('da di vao day')
-    dispatch(
-      productActions.addFavoriteProduct(
-        productId,
-        selectedProduct.imageUrl,
-        selectedProduct.price,
-      ),
-    );
-  }, [dispatch, productId, selectedProduct.imageUrl, selectedProduct.price]);
-
-  const deleteFavorite = useCallback(() => {
-    dispatch(productActions.deleteFavoriteProduct(productId));
-  }, [dispatch, productId]);
-
+  const deleteFavorite = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      await dispatch(productActions.deleteFavoriteProduct(productId));
+    } catch (err) {
+      throw err;
+    }
+    setIsLoading(false);
+  }, [dispatch]);
+  const CheckUserLoginHandle = () => {
+    if (!userId) {
+      props.navigation.navigate('LoginNavigator');
+    } else if (userId && currentFavoriteProduct) {
+      deleteFavorite();
+    } else if (userId && !currentFavoriteProduct) {
+      setFavoriteHandle();
+    }
+  };
   //Animation
   // const opacity =  position.
   const scrollY = new Animated.Value(0);
@@ -129,16 +163,22 @@ const ProductDetail = props => {
             <View style={{flexDirection: 'row'}}>
               <TouchableOpacity
                 style={styles.buttonDetails}
-                onPress={
-                  currentFavoriteProduct ? deleteFavorite : setFavoriteHandle
-                }>
-                <Icon
-                  name={
-                    currentFavoriteProduct ? 'ios-heart' : 'ios-heart-empty'
-                  }
-                  size={25}
-                />
-                <Text> いいね !</Text>
+                onPress={CheckUserLoginHandle}>
+                {isLoading ? (
+                  <View>
+                    <ActivityIndicator size="small" />
+                  </View>
+                ) : (
+                  <Icon
+                    name={
+                      userId && currentFavoriteProduct
+                        ? 'ios-heart'
+                        : 'ios-heart-empty'
+                    }
+                    size={25}
+                  />
+                )}
+                <Text>いいね !</Text>
               </TouchableOpacity>
 
               <TouchableOpacity

@@ -21,16 +21,11 @@ import ProductItem from '../../components/UI/ProductItem';
 const {height} = Dimensions.get('window');
 
 const ProductsOverView = props => {
-  // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState(false);
-  // eslint-disable-next-line no-unused-vars
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
   const dispatch = useDispatch();
-
-  //console.log(products)
-
+  
   const loadProducts = useCallback(async () => {
     setError(null);
     setIsRefreshing(true);
@@ -58,7 +53,7 @@ const ProductsOverView = props => {
       willFocusSub.remove();
     };
   }, [loadProducts, props.navigation]);
-  
+
   const products = useSelector(state => state.products.availableProducts);
 
   //console.log(products)

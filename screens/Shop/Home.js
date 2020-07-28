@@ -10,19 +10,36 @@ import {
   Text,
   Dimensions,
 } from 'react-native';
-
 import {useSelector, useDispatch} from 'react-redux';
-// //import ProductItem from '../../components/shop/ProductItem'
-// import * as cartActions from '../../store/actions/cart'
-import * as productsActions from '../../store/actions/products';
 import IconHeader from '../../components/UI/IconHeader';
 import Colors from '../../constants/Colors';
 import CollectionView from '../../components/Collection';
 import Category from '../../components/Category';
-
+import * as productActions from '../../store/actions/products';
 const {height} = Dimensions.get('window');
+console.disableYellowBox = true;
 
 const Home = props => {
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+  const userId = useSelector(state => state.auth.userId);
+  const loadFavorites = useCallback(async () => {
+    try {
+      await dispatch(productActions.fetchFavorites());
+      //console.log('da di vao day')
+    } catch (err) {
+      throw err;
+    }
+  }, [dispatch]);
+  
+  useEffect(() => {
+    setIsLoading(true);
+    loadFavorites().then(() => {
+      setIsLoading(false);
+    });
+  }, [loadFavorites]);
+  // const abc = useSelector(state => state.products.favoriteProduct);
+  // console.log(abc)
   return (
     <ScrollView>
       <View style={styles.container}>

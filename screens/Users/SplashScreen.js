@@ -19,14 +19,9 @@ import {useDispatch, useSelector} from 'react-redux';
 
 const {height} = Dimensions.get('screen');
 const height_logo = height * 0.7 * 0.4;
-
-console.disableYellowBox = true;
-
 const SplashScreen = props => {
   const dispatch = useDispatch();
-
   const currentLanguae = useSelector(state => state.language.language);
-
   useEffect(() => {
     const tryLogin = async () => {
       const userData = await AsyncStorage.getItem('userData');
@@ -43,7 +38,6 @@ const SplashScreen = props => {
         return;
       }
       const exTime = expirationDate.getTime() - new Date().getTime();
-      console.log(exTime)
       dispatch(authActions.authenticate(userId, token, exTime));
       props.navigation.navigate('Shop');
     };

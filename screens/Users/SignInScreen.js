@@ -216,7 +216,7 @@ const SignInScreen = props => {
               {!isLoginLoading ? (
                 <TouchableOpacity
                   style={{width: '100%'}}
-                  activeOpacity={true}
+                  //activeOpacity={true}
                   onPress={LoginHandler}
                   disabled={disableLogin}>
                   <View style={[styles.signIn, {backgroundColor: '#5db8fe'}]}>

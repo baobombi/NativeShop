@@ -173,7 +173,9 @@ const Cart = props => {
               changeDetails={changeCartItemHandle}
               deletable
             />
+            
           )}
+          one
           disableRightSwipe={true}
           renderHiddenItem={SwipeOutHandle}
           rightOpenValue={-(0.4 * width)}
