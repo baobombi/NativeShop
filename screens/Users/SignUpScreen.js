@@ -20,6 +20,8 @@ FontAwesome.loadFont();
 Feather.loadFont();
 
 const SignUpScreen = props => {
+//console.log('aaaa')
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
@@ -145,9 +147,12 @@ const styles = StyleSheet.create({
   action: {
     flexDirection: 'row',
     marginTop: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
-    paddingBottom: 5,
+    // borderBottomWidth: 1,
+   // borderBottomColor: '#f2f2f2',
+    //paddingBottom: 5,
+    borderRadius: 15,
+    borderWidth: 1,
+    padding: 10
   },
 
   textInput: {

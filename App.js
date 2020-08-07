@@ -19,7 +19,7 @@ const rootReducer = combineReducers({
 });
 
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
-//console.log('Default:', store)
+//console.log('aaaaa')
 var fcmNotification = new FCMService();
 const App = () => {
   const dateExit = new Date();

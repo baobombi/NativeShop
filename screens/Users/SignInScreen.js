@@ -1,4 +1,10 @@
-import React, {useState, useCallback, useEffect, useReducer} from 'react';
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+} from 'react';
 import {
   View,
   Text,
@@ -11,20 +17,21 @@ import {
   KeyboardAvoidingView,
   Dimensions,
 } from 'react-native';
+//Component
+import LineOption from '../../components/UI/IconLogin/LoginOptions';
 import Colors from '../../constants/Colors';
 import Inputs from '../../components/Inputs';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
+import CheckBox from '../../components/UI/IconLogin/CheckBox';
+//Redux
 import * as Animatable from 'react-native-animatable';
 import * as authActions from '../../store/actions/auth';
 import {useDispatch} from 'react-redux';
+import AsyncStorage from '@react-native-community/async-storage';
 
-import LineOption from '../../components/UI/IconLogin/LoginOptions';
-
-FontAwesome.loadFont();
-Feather.loadFont();
-const {height, width} = Dimensions.get('window');
+const {height, width} = Dimensions.get('screen');
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
 const formReducer = (state, action) => {
@@ -54,6 +61,7 @@ const formReducer = (state, action) => {
 };
 
 const SignInScreen = props => {
+  //console.log('aaaa');
   const dispatch = useDispatch();
   const [error, setError] = useState('');
   const [isLoginError, setIsLoginError] = useState('');
@@ -61,7 +69,10 @@ const SignInScreen = props => {
   const [isSignUpLoading, setIsSignUpLoading] = useState(false);
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [disableLogin, setDisableLogin] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [userName, setUsername] = useState('');
 
+  const mountedRef = useRef(true);
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
       email: '',
@@ -73,6 +84,34 @@ const SignInScreen = props => {
     },
     formIsValid: false,
   });
+
+  useEffect(() => {
+    if (error) {
+      Alert.alert('The username or password is incorrect', error, [
+        {text: 'OK'},
+      ]);
+    } else if (isLoginError) {
+      Alert.alert('The username or password is incorrect', isLoginError, [
+        {text: 'OK'},
+      ]);
+    }
+  }, [error, isLoginError]);
+
+  useEffect(() => {
+    //console.log('truoc khi componet render1111');
+    getRememberUser();
+    setRememberMe(true);
+
+    return () => {
+      setRememberMe(false);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const LoginHandler = useCallback(async () => {
     setError(null);
@@ -94,21 +133,28 @@ const SignInScreen = props => {
           formState.inputValues.password,
         ),
       );
+      if (rememberMe == true) {
+        setRememberUser();
+      } else {
+        removeRememberUser();
+      }
+      setRememberMe(false);
       props.navigation.navigate('Shop');
       setIsLoginLoading(false);
     } catch (err) {
       setIsLoginError(err.message);
       setIsLoginLoading(false);
     }
-  }, [dispatch, formState]);
+  }, [dispatch, formState, rememberMe]);
 
-  useEffect(() => {
-    if (error) {
-      Alert.alert('An Error Occurred', error, [{text: 'OK'}]);
-    } else if (isLoginError) {
-      Alert.alert('An Error Occurred', isLoginError, [{text: 'OK'}]);
+  //console.log(rememberMe);
+  const checkBoxHandle = useCallback(() => {
+    if (rememberMe == true) {
+      setRememberMe(false);
+    } else if (rememberMe == false) {
+      setRememberMe(true);
     }
-  }, [error, isLoginError]);
+  }, [setRememberMe]);
 
   const inputChangeHandler = useCallback(
     (inputIdentifier, inputValue, inputValidity) => {
@@ -137,6 +183,39 @@ const SignInScreen = props => {
     disableLoginButton();
   }, [disableLoginButton]);
 
+  const setRememberUser = async () => {
+    await AsyncStorage.setItem(
+      'username',
+      JSON.stringify({savedUserName: formState.inputValues.email}),
+    );
+  };
+  const removeRememberUser = async () => {
+    await AsyncStorage.removeItem('username');
+  };
+
+  const getRememberUser = useCallback(async () => {
+    try {
+      const userName = await AsyncStorage.getItem('username');
+
+      if (!userName) {
+        return;
+      }
+      if (!mountedRef.current) {
+        return null;
+      }
+      const transFormData = JSON.parse(userName);
+      const {savedUserName} = transFormData;
+      //console.log('user name da save: ', savedUserName);
+      if (!savedUserName) {
+        return;
+      }
+      setUsername(savedUserName);
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+  //console.log('user name la: ',userName)
+  //console.log('truoc khi componet render');
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -145,7 +224,7 @@ const SignInScreen = props => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View style={styles.container}>
           <View style={styles.header}>
-            <Text style={styles.textHeader}>Welcome NativeShop</Text>
+            <Text style={styles.textHeader}>Native Shop</Text>
           </View>
           <Animatable.View
             duration={1000}
@@ -163,8 +242,8 @@ const SignInScreen = props => {
                 id="email"
                 errorText="Please enter a email!"
                 required
-                Login
-                initialValue=""
+                Loginn
+                initialValue={userName}
                 onInputChange={inputChangeHandler}
               />
               <Feather name="check-circle" color={Colors.default} size={20} />
@@ -191,6 +270,7 @@ const SignInScreen = props => {
                 returnKeyType="next"
                 errorText="Please enter a password"
                 onInputChange={inputChangeHandler}
+                initialValue=""
                 required
               />
               <TouchableOpacity
@@ -201,32 +281,48 @@ const SignInScreen = props => {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity>
-              <Text style={{color: '#009bd1', marginTop: 15}}>
-                Forgot Password?
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            <View style={styles.rememberMeOverView}>
+              <View style={styles.rememberMeView}>
+                <TouchableOpacity
+                //onPress={checkBoxHandle}
+                >
+                  <CheckBox
+                    name={rememberMe ? 'checkbox-active' : 'checkbox-passive'}
+                  />
+                </TouchableOpacity>
+                <Text style={{marginLeft: 1, fontSize: 15, color: '#009bd1'}}>
+                  Remember Me
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={{
+                  flex: 4,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Text style={{color: '#009bd1', fontSize: 15}}>
+                  Forgot Password?
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* <TouchableOpacity
               onPress={() => props.navigation.navigate('SignUpScreen')}>
-              <Text style={{color: '#009bd1', marginTop: 15, fontSize: 15}}>
+              <Text style={{color: '#009bd1', marginTop: 20, fontSize: 15}}>
                 Register
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <View style={styles.button}>
               {!isLoginLoading ? (
                 <TouchableOpacity
                   style={{width: '100%'}}
                   //activeOpacity={true}
                   onPress={LoginHandler}
-                  disabled={disableLogin}>
+                  //disabled={disableLogin}
+                >
                   <View style={[styles.signIn, {backgroundColor: '#5db8fe'}]}>
                     <Text style={styles.textSignIn}>Login</Text>
                   </View>
-                  {/* <LinearGradient
-                    //colors={['#5db8fe', '#39cff2']}
-                    style={styles.signIn}>
-                    <Text style={styles.textSignIn}>Login</Text>
-                  </LinearGradient> */}
                 </TouchableOpacity>
               ) : (
                 <View style={styles.loginLoading}>
@@ -261,6 +357,21 @@ const SignInScreen = props => {
 };
 
 const styles = StyleSheet.create({
+  rememberMeView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    //backgroundColor:'red',
+    flex: 5,
+  },
+  rememberMeOverView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 30,
+    paddingHorizontal: 5,
+    //backgroundColor:'green'
+  },
+
   container: {
     flex: 1,
     backgroundColor: Colors.default,
@@ -296,9 +407,14 @@ const styles = StyleSheet.create({
   action: {
     flexDirection: 'row',
     marginTop: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
-    paddingBottom: 5,
+    //borderBottomWidth: 1,
+    //borderBottomColor: '#f2f2f2',
+    // paddingBottom: 5,
+    borderRadius: 15,
+    borderWidth: 1,
+    padding: 10,
+    //height: 50
+    //height: 30
   },
 
   textInput: {
@@ -308,7 +424,7 @@ const styles = StyleSheet.create({
 
   button: {
     alignItems: 'center',
-    marginTop: 0.02 * height,
+    marginTop: 0.04 * height,
   },
 
   signIn: {
